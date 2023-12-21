@@ -4,23 +4,21 @@
 # As we know, we are gonna import necessary libraries. We've also imported 
 from flask import Flask, request, render_template
 from flaskext.mysql import MySQL
+import os
 
 # Create an object named app
 app = Flask(__name__)
-
-# The hardest part of this project is to get endpoint of RDS instances. Since our RDS is created within cloudformation template, we need to get RDS endpoint and paste it here as environmental variable using Launch templates user data. 
-db_endpoint = open("/home/ec2-user/phonebook/dbserver.endpoint", 'r', encoding='UTF-8') 
 
 # Configure mysql database
 
 # Once we are done with the database, we are going to create database.
 # we need to configure our database. I've explained this part before. Lets have a look at these configuration. 
-app.config['MYSQL_DATABASE_HOST'] = db_endpoint.readline().strip()
+app.config['MYSQL_DATABASE_HOST'] = os.getenv('MYSQL_DATABASE_HOST')
 app.config['MYSQL_DATABASE_USER'] = 'admin'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'Oliver_1'
 app.config['MYSQL_DATABASE_DB'] = 'phonebook'
 app.config['MYSQL_DATABASE_PORT'] = 3306
-db_endpoint.close()
+
 mysql = MySQL() # We are using this function to initialize mysql 
 mysql.init_app(app) 
 connection = mysql.connect()
@@ -197,3 +195,4 @@ if __name__== '__main__':
     init_phonebook_db()
     # app.run(debug=True)
     app.run(host='0.0.0.0', port=80) 
+ 
